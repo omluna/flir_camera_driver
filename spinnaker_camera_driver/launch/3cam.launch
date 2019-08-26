@@ -37,13 +37,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <arg name="back_camera_serial" default="18566208" />
   <arg name="back_camera_calibrated" default="0" />
 
-  <arg name="acquisition_frame_rate" default="10" />
-  <arg name="acquisition_frame_rate_enable" default="true"/>
+  <arg name="acquisition_frame_rate" default="30" />
+  <arg name="acquisition_frame_rate_enable" default="false"/>
   <arg name="image_format_color_coding" default="BayerRG8"/>
   <arg name="ieee1588_enable" default="true"/>
   <arg name="enable_trigger" default="On"/>
   <arg name="timeout" default="0"/>
-  <arg name="trigger_overlap_mode" default="ReadOut"/>
+  <arg name="trigger_overlap_mode" default="Off"/>
+  <arg name="trigger_activation_mode" default="FallingEdge"/>
 
 
 <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" />
@@ -62,6 +63,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
         <param name="trigger_overlap_mode" value="$(arg trigger_overlap_mode)" />
+        <param name="trigger_activation_mode" value="$(arg trigger_activation_mode)" />
 
         <!-- When unspecified, the driver will use the default framerate as given by the
              camera itself. Use this parameter to override that value for cameras capable of
@@ -91,6 +93,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
         <param name="trigger_overlap_mode" value="$(arg trigger_overlap_mode)" />
+        <param name="trigger_activation_mode" value="$(arg trigger_activation_mode)" />
 
         <!-- When unspecified, the driver will use the default framerate as given by the
              camera itself. Use this parameter to override that value for cameras capable of
@@ -121,6 +124,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
         <param name="trigger_overlap_mode" value="$(arg trigger_overlap_mode)" />
+        <param name="trigger_activation_mode" value="$(arg trigger_activation_mode)" />
 
         <!-- When unspecified, the driver will use the default framerate as given by the
              camera itself. Use this parameter to override that value for cameras capable of
