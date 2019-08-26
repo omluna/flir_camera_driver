@@ -75,6 +75,7 @@ void Camera::setNewConfiguration(const SpinnakerConfig& config, const uint32_t& 
     setFrameRate(static_cast<float>(config.acquisition_frame_rate));
     // Set enable after frame rate encase its false
     setProperty(node_map_, "AcquisitionFrameRateEnable", config.acquisition_frame_rate_enable);
+    setProperty(node_map_, "GevIEEE1588", config.ieee1588_enable);
 
     // Set Trigger and Strobe Settings
     // NOTE: The trigger must be disabled (i.e. TriggerMode = "Off") in order to configure whether the source is
@@ -167,6 +168,8 @@ void Camera::setNewConfiguration(const SpinnakerConfig& config, const uint32_t& 
 void Camera::setImageControlFormats(const spinnaker_camera_driver::SpinnakerConfig& config)
 {
   // Set Binning and Decimation
+  ROS_INFO("setImageControlFormats BinningHorizontal:%u", config.image_format_x_binning);
+  ROS_INFO("setImageControlFormats BinningVertical:%u", config.image_format_y_binning);
   setProperty(node_map_, "BinningHorizontal", config.image_format_x_binning);
   setProperty(node_map_, "BinningVertical", config.image_format_y_binning);
   setProperty(node_map_, "DecimationHorizontal", config.image_format_x_decimation);

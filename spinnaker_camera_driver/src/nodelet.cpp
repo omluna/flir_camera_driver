@@ -514,7 +514,6 @@ private:
               double timeout;
               getMTPrivateNodeHandle().param("timeout", timeout, 1.0);
 
-              NODELET_DEBUG_ONCE("Setting timeout to: %f.", timeout);
               spinnaker_.setTimeout(timeout);
             }
             catch (const std::runtime_error& e)
@@ -581,10 +580,15 @@ private:
             wfov_image->white_balance_red = wb_red_;
 
             // wfov_image->temperature = spinnaker_.getCameraTemperature();
-
-            ros::Time time = ros::Time::now();
-            wfov_image->header.stamp = time;
-            wfov_image->image.header.stamp = time;
+            //lugf modify to ieee1588
+	    if (config_.ieee1588_enable) 
+	    {
+	      wfov_image->header.stamp = wfov_image->image.header.stamp; 
+	    } else {
+	      ros::Time time = ros::Time::now();
+	      wfov_image->header.stamp = time;
+	      wfov_image->image.header.stamp = time;
+	    }
 
             // Set the CameraInfo message
             ci_.reset(new sensor_msgs::CameraInfo(cinfo_->getCameraInfo()));
@@ -618,8 +622,8 @@ private:
 
           catch (std::runtime_error& e)
           {
-            NODELET_ERROR("%s", e.what());
-            state = ERROR;
+            NODELET_ERROR("just ignore ----- %s", e.what());
+            //state = ERROR;
           }
 
           break;

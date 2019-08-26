@@ -239,6 +239,7 @@ void SpinnakerCamera::connect()
 
       // Configure chunk data - Enable Metadata
       // SpinnakerCamera::ConfigureChunkData(*node_map_);
+      //SpinnakerCamera::ConfigureChunkDataTimestamp(*node_map_);
     }
     catch (const Spinnaker::Exception& e)
     {
@@ -329,7 +330,10 @@ void SpinnakerCamera::grabImage(sensor_msgs::Image* image, const std::string& fr
     // Handle "Image Retrieval" Exception
     try
     {
-      Spinnaker::ImagePtr image_ptr = pCam_->GetNextImage(timeout_);
+      if (timeout_)
+      	Spinnaker::ImagePtr image_ptr = pCam_->GetNextImage(timeout_);
+      else
+      	Spinnaker::ImagePtr image_ptr = pCam_->GetNextImage();
       //  std::string format(image_ptr->GetPixelFormatName());
       //  std::printf("\033[100m format: %s \n", format.c_str());
 
@@ -342,7 +346,14 @@ void SpinnakerCamera::grabImage(sensor_msgs::Image* image, const std::string& fr
       {
         // Set Image Time Stamp
         image->header.stamp.sec = image_ptr->GetTimeStamp() * 1e-9;
-        image->header.stamp.nsec = image_ptr->GetTimeStamp();
+        image->header.stamp.nsec = image_ptr->GetTimeStamp() - image->header.stamp.sec*1e+9;
+
+	/*
+	Spinnaker::ChunkData chunkData = image_ptr->GetChunkData();
+	uint64_t timestamp = chunkData.GetTimestamp();
+
+	ROS_INFO_STREAM("hhhhhhhhhhh " << timestamp << "image:" << image_ptr->GetTimeStamp() << " image sec: " << image->header.stamp.sec << " image nsec:" << image->header.stamp.nsec);
+	*/
 
         // Check the bits per pixel.
         size_t bitsPerPixel = image_ptr->GetBitsPerPixel();
@@ -462,6 +473,86 @@ void SpinnakerCamera::setDesiredCamera(const uint32_t& id)
 {
   serial_ = id;
 }
+
+void SpinnakerCamera::ConfigureChunkDataTimestamp(const Spinnaker::GenApi::INodeMap& nodeMap)
+{
+  ROS_INFO_STREAM("*** CONFIGURING CHUNK DATA ***");
+  try
+  {
+    // Activate chunk mode
+    //
+    // *** NOTES ***
+    // Once enabled, chunk data will be available at the end of the payload
+    // of every image captured until it is disabled. Chunk data can also be
+    // retrieved from the nodemap.
+    //
+    Spinnaker::GenApi::CBooleanPtr ptrChunkModeActive = nodeMap.GetNode("ChunkModeActive");
+    if (!Spinnaker::GenApi::IsAvailable(ptrChunkModeActive) || !Spinnaker::GenApi::IsWritable(ptrChunkModeActive))
+    {
+      throw std::runtime_error("Unable to activate chunk mode. Aborting...");
+    }
+    ptrChunkModeActive->SetValue(true);
+    ROS_INFO_STREAM_ONCE("Chunk mode activated...");
+
+    // Enable all types of chunk data
+    //
+    // *** NOTES ***
+    // Enabling chunk data requires working with nodes: "ChunkSelector"
+    // is an enumeration selector node and "ChunkEnable" is a boolean. It
+    // requires retrieving the selector node (which is of enumeration node
+    // type), selecting the entry of the chunk data to be enabled, retrieving
+    // the corresponding boolean, and setting it to true.
+    //
+    // In this example, all chunk data is enabled, so these steps are
+    // performed in a loop. Once this is complete, chunk mode still needs to
+    // be activated.
+    //
+    Spinnaker::GenApi::NodeList_t entries;
+    // Retrieve the selector node
+    Spinnaker::GenApi::CEnumerationPtr ptrChunkSelector = nodeMap.GetNode("ChunkSelector");
+    if (!Spinnaker::GenApi::IsAvailable(ptrChunkSelector) || !Spinnaker::GenApi::IsReadable(ptrChunkSelector))
+    {
+      throw std::runtime_error("Unable to retrieve chunk selector. Aborting...");
+    }
+
+      // Select entry to be enabled
+      Spinnaker::GenApi::CEnumEntryPtr ptrChunkSelectorEntry = ptrChunkSelector->GetEntryByName("Timestamp");
+      // Go to next node if problem occurs
+      if (!Spinnaker::GenApi::IsAvailable(ptrChunkSelectorEntry) ||
+          !Spinnaker::GenApi::IsReadable(ptrChunkSelectorEntry))
+      {
+	      ROS_INFO("chunk is not readable");
+	      return;
+      }
+      ptrChunkSelector->SetIntValue(ptrChunkSelectorEntry->GetValue());
+
+      ROS_INFO_STREAM("\t" << ptrChunkSelectorEntry->GetSymbolic() << ": ");
+      // Retrieve corresponding boolean
+      Spinnaker::GenApi::CBooleanPtr ptrChunkEnable = nodeMap.GetNode("ChunkEnable");
+      // Enable the boolean, thus enabling the corresponding chunk data
+      if (!Spinnaker::GenApi::IsAvailable(ptrChunkEnable))
+      {
+        ROS_INFO("Node not available");
+      }
+      else if (ptrChunkEnable->GetValue())
+      {
+        ROS_INFO("Enabled");
+      }
+      else if (Spinnaker::GenApi::IsWritable(ptrChunkEnable))
+      {
+        ptrChunkEnable->SetValue(true);
+        ROS_INFO("Enabled");
+      }
+      else
+      {
+        ROS_INFO("Node not writable");
+      }
+    }
+  catch (const Spinnaker::Exception& e)
+  {
+    throw std::runtime_error(e.what());
+  }
+}  // namespace spinnaker_camera_driver
 
 void SpinnakerCamera::ConfigureChunkData(const Spinnaker::GenApi::INodeMap& nodeMap)
 {

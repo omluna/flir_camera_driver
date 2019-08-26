@@ -61,7 +61,16 @@ inline bool setProperty(Spinnaker::GenApi::INodeMap* node_map, const std::string
   {
     if (Spinnaker::GenApi::IsWritable(enumerationPtr))
     {
-      Spinnaker::GenApi::CEnumEntryPtr enumEmtryPtr = enumerationPtr->GetEntryByName(entry_name.c_str());
+
+       Spinnaker::GenApi::CEnumEntryPtr enumEmtryPtr = enumerationPtr->GetEntryByName(entry_name.c_str());
+       /*
+      if (entry_name.compare(std::string("Mono8")) == 0) {
+	ROS_INFO_STREAM("[Mono8]: "  << ".");
+        enumEmtryPtr = enumerationPtr->GetEntryByName("BayerRG8");
+      } else {
+      	enumEmtryPtr = enumerationPtr->GetEntryByName(entry_name.c_str());
+      } */
+
 
       if (Spinnaker::GenApi::IsAvailable(enumEmtryPtr))
       {
@@ -199,11 +208,16 @@ inline bool setProperty(Spinnaker::GenApi::INodeMap* node_map, const std::string
     if (Spinnaker::GenApi::IsWritable(intPtr))
     {
       int temp_value = value;
-      if (temp_value > intPtr->GetMax())
+      ROS_INFO_STREAM("setpropery:" << property_name << " set value:" << temp_value);
+      if (temp_value > intPtr->GetMax()) {
         temp_value = intPtr->GetMax();
-      else if (temp_value < intPtr->GetMin())
+	ROS_INFO_STREAM("setpropery:" << property_name << " max:" << temp_value);
+      } else if (temp_value < intPtr->GetMin()) {
         temp_value = intPtr->GetMin();
+	ROS_INFO_STREAM("setpropery:" << property_name << " min:" << temp_value);
+      }
       intPtr->SetValue(temp_value);
+      ROS_INFO_STREAM("setpropery:" << property_name << " final:" << temp_value);
       ROS_INFO_STREAM("[SpinnakerCamera]: ("
                       << static_cast<Spinnaker::GenApi::CStringPtr>(node_map->GetNode("DeviceID"))->GetValue() << ") "
                       << property_name << " set to " << intPtr->GetValue() << ".");
