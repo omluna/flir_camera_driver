@@ -37,11 +37,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <arg name="back_camera_serial" default="18566208" />
   <arg name="back_camera_calibrated" default="0" />
 
-  <arg name="acquisition_frame_rate" default="30" />
-  <arg name="acquisition_frame_rate_enable" default="false"/>
+  <arg name="acquisition_frame_rate" default="20" />
+  <arg name="acquisition_frame_rate_enable" default="true"/>
   <arg name="image_format_color_coding" default="BayerRG8"/>
+  <arg name="auto_white_balance" default="On"/>
   <arg name="ieee1588_enable" default="true"/>
-  <arg name="enable_trigger" default="On"/>
+  <arg name="enable_trigger" default="Off"/>
   <arg name="timeout" default="0"/>
   <arg name="trigger_overlap_mode" default="Off"/>
   <arg name="trigger_activation_mode" default="FallingEdge"/>
@@ -59,6 +60,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="acquisition_frame_rate" value="$(arg acquisition_frame_rate)" />
         <param name="acquisition_frame_rate_enable" value="$(arg acquisition_frame_rate_enable)" />
         <param name="image_format_color_coding" value="$(arg image_format_color_coding)" />
+        <param name="auto_white_balance" value="$(arg auto_white_balance)" />
         <param name="ieee1588_enable" value="$(arg ieee1588_enable)" />
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
@@ -89,6 +91,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="acquisition_frame_rate" value="$(arg acquisition_frame_rate)" />
         <param name="acquisition_frame_rate_enable" value="$(arg acquisition_frame_rate_enable)" />
         <param name="image_format_color_coding" value="$(arg image_format_color_coding)" />
+        <param name="auto_white_balance" value="$(arg auto_white_balance)" />
         <param name="ieee1588_enable" value="$(arg ieee1588_enable)" />
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
@@ -120,6 +123,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
         <param name="acquisition_frame_rate" value="$(arg acquisition_frame_rate)" />
         <param name="acquisition_frame_rate_enable" value="$(arg acquisition_frame_rate_enable)" />
         <param name="image_format_color_coding" value="$(arg image_format_color_coding)" />
+        <param name="auto_white_balance" value="$(arg auto_white_balance)" />
         <param name="ieee1588_enable" value="$(arg ieee1588_enable)" />
         <param name="enable_trigger" value="$(arg enable_trigger)" />
         <param name="timeout" value="$(arg timeout)" />
